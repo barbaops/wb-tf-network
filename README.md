@@ -2,8 +2,11 @@
 Este módulo provisiona a infraestrutura de rede na AWS, incluindo:
 
 ✔ VPC com Internet Gateway.
+
 ✔ Sub-redes públicas e privadas.
+
 ✔ Parameter Store para armazenar parâmetros.
+
 ✔ Tags padronizadas para governança e rastreamento no CMDB.
 
 📂 Estrutura do Repositório
@@ -194,9 +197,13 @@ Agora todas as aplicações reutilizam os valores de _config/common-values.hcl, 
 
 ✅ Vantagens do Módulo
 ✔ Cria 1 VPC e 3 sub-redes (1 pública e 2 privadas).
+
 ✔ Garante governança com tags obrigatórias.
+
 ✔ Flexível: Pode ser usado com Terraform ou Terragrunt.
+
 ✔ Reutilizável: Com Terragrunt, os valores podem ser centralizados.
+
 ✔ Facilmente expansível para novas sub-redes e serviços.
 
 ---
