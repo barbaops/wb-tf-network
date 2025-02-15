@@ -1,4 +1,4 @@
 output "subnet_ids" {
-  description = "IDs das sub-redes criadas"
+  description = "IDs das subnets criadas"
   value       = aws_subnet.this[*].id
 }

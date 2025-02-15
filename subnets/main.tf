@@ -1,10 +1,13 @@
 resource "aws_subnet" "this" {
-  count = length(var.subnet_cidrs)
+  count = length(var.subnets)
 
   vpc_id                  = var.vpc_id
-  cidr_block              = var.subnet_cidrs[count.index]
-  availability_zone       = element(var.availability_zones, count.index)
-  map_public_ip_on_launch = var.is_public
+  cidr_block              = var.subnets[count.index]["cidr"]
+  availability_zone       = var.subnets[count.index]["az"]
+  map_public_ip_on_launch = lookup(var.subnets[count.index], "public", false)
 
-  tags = merge(var.tags, { "Name" = "${var.subnet_name}-${count.index}" })
+  tags = merge(var.tags, {
+    "Name"  = "${var.vpc_name}-${var.subnets[count.index]["name"]}"
+    "Type"  = var.subnets[count.index]["type"]
+  })
 }
