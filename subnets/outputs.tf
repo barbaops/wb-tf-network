@@ -9,6 +9,6 @@ output "public_route_table_id" {
 }
 
 output "subnet_ids" {
-  description = "IDs das subnets criadas"
-  value       = aws_subnet.this[*].id
+  description = "Lista de IDs das subnets criadas"
+  value       = { for k, v in aws_subnet.this : k => v.id }
 }
