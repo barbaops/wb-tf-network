@@ -1,26 +1,55 @@
 variable "vpc_id" {
-  description = "ID da VPC onde as sub-redes serão criadas"
+  description = "ID da VPC onde as subnets serão criadas"
   type        = string
 }
 
 variable "vpc_name" {
-  description = "Nome da VPC para referência nas subnets"
+  description = "Nome da VPC"
   type        = string
 }
 
-variable "subnets" {
-  description = "Lista de sub-redes a serem criadas, com detalhes de configuração"
+variable "public_subnets" {
+  description = "Lista de subnets públicas (opcional)"
   type = list(object({
-    name  = string  # Nome da subnet (ex: database, app, cache)
-    cidr  = string  # CIDR da subnet
-    az    = string  # Zona de Disponibilidade
-    type  = string  # Tipo da subnet (public, private, database, etc.)
-    public = optional(bool, false)  # Define se a subnet é pública ou privada (padrão: privada)
+    name = string
+    cidr = string
+    az   = string
   }))
+  default = []
+}
+
+variable "private_subnets" {
+  description = "Lista de subnets privadas (opcional)"
+  type = list(object({
+    name = string
+    cidr = string
+    az   = string
+  }))
+  default = []
+}
+
+variable "database_subnets" {
+  description = "Lista de subnets para banco de dados (opcional)"
+  type = list(object({
+    name = string
+    cidr = string
+    az   = string
+  }))
+  default = []
+}
+
+variable "pods_subnets" {
+  description = "Lista de subnets para PODs do EKS (opcional)"
+  type = list(object({
+    name = string
+    cidr = string
+    az   = string
+  }))
+  default = []
 }
 
 variable "tags" {
-  description = "Tags adicionais para todas as subnets"
+  description = "Tags aplicadas aos recursos"
   type        = map(string)
   default     = {}
 }

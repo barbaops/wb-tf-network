@@ -1,27 +1,28 @@
 variable "vpc_id" {
-  description = "ID da VPC"
+  description = "ID da VPC onde as NACLs serão criadas"
   type        = string
 }
 
-variable "nacl_name" {
-  description = "Nome da NACL"
-  type        = string
-}
-
-variable "ingress_rules" {
-  description = "Regras de entrada para NACL"
+variable "nacls" {
+  description = "Lista de NACLs a serem criadas e suas regras associadas"
   type = list(object({
-    rule_number = number
-    protocol    = string
-    rule_action = string
-    cidr_block  = string
-    from_port   = number
-    to_port     = number
+    name       = string
+    subnet_ids = list(string)
+
+    rules = list(object({
+      rule_number = number
+      rule_action = string
+      protocol    = string
+      cidr_block  = string
+      from_port   = number
+      to_port     = number
+      egress      = bool
+    }))
   }))
 }
 
 variable "tags" {
-  description = "Tags a serem aplicadas"
+  description = "Tags aplicadas aos recursos"
   type        = map(string)
   default     = {}
 }

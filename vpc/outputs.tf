@@ -1,9 +1,3 @@
 output "vpc_id" {
-  description = "ID da VPC criada"
-  value       = aws_vpc.this.id
-}
-
-output "internet_gateway_id" {
-  description = "ID do Internet Gateway"
-  value       = aws_internet_gateway.this.id
+  value = aws_vpc.this.id
 }
