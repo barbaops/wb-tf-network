@@ -1,29 +1,53 @@
-resource "aws_network_acl" "this" {
-  for_each = { for nacl in var.nacls : nacl.name => nacl }
-
-  vpc_id = var.vpc_id
-
-  tags = merge(var.tags, {
-    "Name" = each.value.name
-  })
+# 🔹 IDs das subnets públicas
+output "public_subnet_ids" {
+  description = "IDs das subnets públicas criadas"
+  value       = aws_subnet.public[*].id
 }
 
-resource "aws_network_acl_association" "this" {
-  for_each = { for nacl in var.nacls : nacl.name => nacl if length(nacl.subnet_ids) > 0 }
-
-  network_acl_id = aws_network_acl.this[each.key].id
-  subnet_id      = each.value.subnet_ids[count.index]
+# 🔹 IDs das subnets privadas
+output "private_subnet_ids" {
+  description = "IDs das subnets privadas criadas"
+  value       = aws_subnet.private[*].id
 }
 
-resource "aws_network_acl_rule" "this" {
-  for_each = { for nacl in var.nacls : nacl.name => nacl if length(nacl.rules) > 0 }
+# 🔹 IDs das subnets de banco de dados
+output "database_subnet_ids" {
+  description = "IDs das subnets criadas para banco de dados"
+  value       = length(var.database_subnets) > 0 ? aws_subnet.database[*].id : []
+}
 
-  network_acl_id = aws_network_acl.this[each.key].id
-  rule_number    = each.value.rules[count.index].rule_number
-  rule_action    = each.value.rules[count.index].rule_action
-  protocol       = each.value.rules[count.index].protocol
-  cidr_block     = each.value.rules[count.index].cidr_block
-  from_port      = each.value.rules[count.index].from_port
-  to_port        = each.value.rules[count.index].to_port
-  egress         = each.value.rules[count.index].egress
+# 🔹 IDs das subnets de pods
+output "pods_subnet_ids" {
+  description = "IDs das subnets criadas para pods do EKS"
+  value       = length(var.pods_subnets) > 0 ? aws_subnet.pods[*].id : []
+}
+
+# 🔹 CIDR das subnets privadas (para regras de segurança)
+output "private_subnet_cidrs" {
+  description = "Lista de CIDRs das subnets privadas"
+  value       = aws_subnet.private[*].cidr_block
+}
+
+# 🔹 CIDR das subnets de banco de dados (para regras de segurança)
+output "database_subnet_cidrs" {
+  description = "Lista de CIDRs das subnets de banco de dados"
+  value       = length(var.database_subnets) > 0 ? aws_subnet.database[*].cidr_block : []
+}
+
+# 🔹 CIDR das subnets de pods (para regras de segurança)
+output "pods_subnet_cidrs" {
+  description = "Lista de CIDRs das subnets de pods"
+  value       = length(var.pods_subnets) > 0 ? aws_subnet.pods[*].cidr_block : []
+}
+
+# 🔹 IDs dos NAT Gateways criados
+output "nat_gateway_ids" {
+  description = "IDs dos NAT Gateways criados"
+  value       = length(var.private_subnets) > 0 ? aws_nat_gateway.this[*].id : []
+}
+
+# 🔹 Tabela de Rotas Privadas
+output "private_route_table_ids" {
+  description = "IDs das tabelas de rotas das subnets privadas"
+  value       = aws_route_table.private[*].id
 }
