@@ -5,5 +5,5 @@ output "subnet_ids" {
 
 output "private_subnet_cidrs" {
   description = "Lista de CIDRs das subnets privadas"
-  value       = aws_subnet.private[*].cidr_block
+  value       = [for subnet in aws_subnet.this : subnet.cidr_block if lookup(subnet.tags, "Type", "private") == "private"]
 }
