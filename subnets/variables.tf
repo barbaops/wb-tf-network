@@ -3,10 +3,10 @@ variable "vpc_id" {
   type        = string
 }
 
-#variable "vpc_name" {
-#  description = "Nome da VPC para referência nas subnets"
-#  type        = string
-#}
+variable "vpc_name" {
+  description = "Nome da VPC para referência nas subnets"
+  type        = string
+}
 
 variable "subnets" {
   description = "Lista de sub-redes a serem criadas, com detalhes de configuração"
