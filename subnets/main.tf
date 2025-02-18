@@ -25,12 +25,14 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "this" {
-  count         = length([for s in var.subnets : s if s.type == "private"]) > 0 ? 1 : 0
-  allocation_id = aws_eip.nat[0].id
-  subnet_id     = aws_subnet.this["public-1a"].id
+  count = length([for s in var.subnets : s if s.type == "private"]) > 0 ? 1 : 0
+
+  allocation_id = length(aws_eip.nat) > 0 ? aws_eip.nat[0].id : null
+  subnet_id     = lookup(aws_subnet.this, "public-1a", null) != null ? aws_subnet.this["public-1a"].id : element(values(aws_subnet.this), 0).id
 
   tags = merge(var.tags, { "Name" = "${var.vpc_name}-nat" })
 }
+
 
 resource "aws_route_table" "public" {
   count  = length([for s in var.subnets : s if s.type == "public"]) > 0 ? 1 : 0
