@@ -3,31 +3,22 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "vpc_name" {
+  description = "Nome da VPC"
+  type        = string
+}
+
 variable "subnets" {
   description = "Lista de subnets a serem criadas"
   type = list(object({
-    name   = string
-    cidr   = string
-    az     = string
-    type   = string
-    public = optional(bool, false)
+    name = string
+    cidr = string
+    az   = string
+    type = string
   }))
 }
 
-variable "create_nat_gateway" {
-  description = "Se verdadeiro, cria um NAT Gateway"
-  type        = bool
-  default     = false
-}
-
-variable "nat_subnet" {
-  description = "Nome da subnet pública onde o NAT Gateway será criado"
-  type        = string
-  default     = ""
-}
-
 variable "tags" {
-  description = "Tags aplicadas aos recursos"
+  description = "Tags aplicadas a todos os recursos"
   type        = map(string)
-  default     = {}
 }
