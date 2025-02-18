@@ -1,26 +1,33 @@
 variable "vpc_id" {
-  description = "ID da VPC onde as sub-redes serão criadas"
-  type        = string
-}
-
-variable "vpc_name" {
-  description = "Nome da VPC para referência nas subnets"
+  description = "ID da VPC onde as subnets serão criadas"
   type        = string
 }
 
 variable "subnets" {
-  description = "Lista de sub-redes a serem criadas, com detalhes de configuração"
+  description = "Lista de subnets a serem criadas"
   type = list(object({
-    name  = string  # Nome da subnet (ex: database, app, cache)
-    cidr  = string  # CIDR da subnet
-    az    = string  # Zona de Disponibilidade
-    type  = string  # Tipo da subnet (public, private, database, etc.)
-    public = optional(bool, false)  # Define se a subnet é pública ou privada (padrão: privada)
+    name   = string
+    cidr   = string
+    az     = string
+    type   = string
+    public = optional(bool, false)
   }))
 }
 
+variable "create_nat_gateway" {
+  description = "Se verdadeiro, cria um NAT Gateway"
+  type        = bool
+  default     = false
+}
+
+variable "nat_subnet" {
+  description = "Nome da subnet pública onde o NAT Gateway será criado"
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
-  description = "Tags adicionais para todas as subnets"
+  description = "Tags aplicadas aos recursos"
   type        = map(string)
   default     = {}
 }
