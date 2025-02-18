@@ -50,3 +50,13 @@ resource "aws_route_table_association" "this" {
   subnet_id      = aws_subnet.this[each.key].id
   route_table_id = each.value.id
 }
+
+resource "aws_internet_gateway" "this" {
+  count  = length([for subnet in var.subnets : subnet if subnet.public]) > 0 ? 1 : 0
+  vpc_id = var.vpc_id
+
+  tags = merge(var.tags, {
+    "Name" = "internet-gateway"
+  })
+}
+
