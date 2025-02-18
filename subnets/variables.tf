@@ -4,9 +4,8 @@ variable "vpc_id" {
 }
 
 variable "vpc_name" {
-  description = "Nome da VPC"
+  description = "Nome da VPC para tagging"
   type        = string
-  default     = "shared"
 }
 
 variable "subnets" {
@@ -20,6 +19,7 @@ variable "subnets" {
 }
 
 variable "tags" {
-  description = "Tags aplicadas a todos os recursos"
+  description = "Tags adicionais para os recursos"
   type        = map(string)
+  default     = {}
 }
