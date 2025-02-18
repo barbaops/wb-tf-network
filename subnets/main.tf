@@ -1,46 +1,52 @@
 resource "aws_subnet" "this" {
-  count = length(var.subnets)
+  for_each = { for subnet in var.subnets : subnet.name => subnet }
 
   vpc_id                  = var.vpc_id
-  cidr_block              = var.subnets[count.index]["cidr"]
-  availability_zone       = var.subnets[count.index]["az"]
-  map_public_ip_on_launch = lookup(var.subnets[count.index], "public", false)
+  cidr_block              = each.value.cidr
+  availability_zone       = each.value.az
+  map_public_ip_on_launch = lookup(each.value, "public", false)
 
   tags = merge(var.tags, {
-    "Name"  = "${var.vpc_name}-${var.subnets[count.index]["name"]}"
-    "Type"  = lookup(var.subnets[count.index], "public", false) ? "public" : "private"
+    "Name" = each.value.name
   })
 }
 
-# 🔹 Criar Internet Gateway se houver ao menos 1 subnet pública
-resource "aws_internet_gateway" "this" {
-  count  = length([for subnet in var.subnets : subnet if lookup(subnet, "public", false)]) > 0 ? 1 : 0
+resource "aws_eip" "nat" {
+  count  = var.create_nat_gateway ? 1 : 0
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "this" {
+  count         = var.create_nat_gateway ? 1 : 0
+  allocation_id = aws_eip.nat[0].id
+  subnet_id     = aws_subnet.this[var.nat_subnet].id
+
+  tags = merge(var.tags, {
+    "Name" = "nat-gateway"
+  })
+}
+
+resource "aws_route_table" "this" {
+  for_each = { for subnet in var.subnets : subnet.name => subnet if subnet.type == "private" }
+
   vpc_id = var.vpc_id
 
   tags = merge(var.tags, {
-    "Name" = "${var.vpc_name}-igw"
+    "Name" = "${each.key}-rt"
   })
 }
 
-# 🔹 Criar Tabela de Rotas Pública se houver subnets públicas
-resource "aws_route_table" "public" {
-  count  = length([for subnet in var.subnets : subnet if lookup(subnet, "public", false)]) > 0 ? 1 : 0
-  vpc_id = var.vpc_id
+resource "aws_route" "nat" {
+  for_each = aws_route_table.this
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.this[0].id
-  }
-
-  tags = merge(var.tags, {
-    "Name" = "${var.vpc_name}-public-rt"
-  })
+  route_table_id         = each.value.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_nat_gateway.this[0].id
 }
 
-# 🔹 Associar Subnets Públicas à Tabela de Rotas Pública
-resource "aws_route_table_association" "public" {
-  count = length([for subnet in var.subnets : subnet if lookup(subnet, "public", false)])
+resource "aws_route_table_association" "this" {
+  for_each = aws_route_table.this
 
-  subnet_id      = aws_subnet.this[count.index].id
-  route_table_id = aws_route_table.public[0].id
+  subnet_id      = aws_subnet.this[each.key].id
+  route_table_id = each.value.id
 }
