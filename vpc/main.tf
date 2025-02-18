@@ -1,17 +1,13 @@
 resource "aws_vpc" "this" {
-  cidr_block = var.vpc_cidr
-  enable_dns_support = true
-  enable_dns_hostnames = true
+  cidr_block = var.cidr_block
 
-  tags = {
-    Name = var.vpc_name
-  }
+  tags = merge(var.tags, {
+    "Name" = var.vpc_name
+  })
 }
 
-resource "aws_internet_gateway" "this" {
-  vpc_id = aws_vpc.this.id
-
-  tags = {
-    Name = "${var.vpc_name}-igw"
-  }
+resource "aws_vpc_ipv4_cidr_block_association" "additional" {
+  count      = var.additional_cidr_block != null ? 1 : 0
+  vpc_id     = aws_vpc.this.id
+  cidr_block = var.additional_cidr_block
 }
