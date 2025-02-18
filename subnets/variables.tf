@@ -6,6 +6,7 @@ variable "vpc_id" {
 variable "vpc_name" {
   description = "Nome da VPC"
   type        = string
+  default     = "shared"
 }
 
 variable "subnets" {
