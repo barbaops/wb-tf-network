@@ -18,3 +18,8 @@ variable "subnets" {
     type = string
   }))
 }
+
+variable "tags" {
+  description = "Tags aplicadas a todos os recursos"
+  type        = map(string)
+}
