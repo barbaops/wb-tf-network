@@ -1,10 +1,10 @@
 variable "vpc_id" {
-  description = "ID da VPC onde as subnets serão criadas"
+  description = "ID da VPC"
   type        = string
 }
 
 variable "vpc_name" {
-  description = "Nome da VPC para tagging"
+  description = "Nome da VPC"
   type        = string
 }
 
@@ -19,7 +19,7 @@ variable "subnets" {
 }
 
 variable "tags" {
-  description = "Tags adicionais para os recursos"
+  description = "Tags padrões"
   type        = map(string)
   default     = {}
 }
