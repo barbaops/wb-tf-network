@@ -1,24 +1,19 @@
-output "public_subnet_ids" {
-  description = "IDs das subnets públicas criadas"
-  value       = { for k, v in aws_subnet.this : k => v.id if v.map_public_ip_on_launch }
+output "subnet_ids" {
+  description = "IDs das subnets criadas"
+  value       = { for k, v in aws_subnet.this : k => v.id }
 }
 
-output "private_subnet_ids" {
-  description = "IDs das subnets privadas criadas"
-  value       = { for k, v in aws_subnet.this : k => v.id if !v.map_public_ip_on_launch }
+output "route_table_ids" {
+  description = "IDs das Route Tables"
+  value = {
+    public  = length(aws_route_table.public) > 0 ? aws_route_table.public[0].id : null
+    private = { for k, v in aws_route_table.private : k => v.id }
+    database = length(aws_route_table.database) > 0 ? aws_route_table.database[0].id : null
+    pods = length(aws_route_table.pods) > 0 ? aws_route_table.pods[0].id : null
+  }
 }
 
 output "nat_gateway_ids" {
-  description = "IDs dos NAT Gateways criados"
+  description = "IDs dos NAT Gateways"
   value       = { for k, v in aws_nat_gateway.this : k => v.id }
-}
-
-output "public_route_table_id" {
-  description = "ID da Route Table pública"
-  value       = length(aws_route_table.public) > 0 ? aws_route_table.public[0].id : null
-}
-
-output "private_route_table_ids" {
-  description = "IDs das Route Tables privadas por AZ"
-  value       = { for k, v in aws_route_table.private : k => v.id }
 }
